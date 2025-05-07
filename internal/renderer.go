@@ -96,9 +96,6 @@ func (vr *Renderer) listenForEvents() {
 func (vr *Renderer) Process(dt Float.X) {
 	variant.Use(vr.shader[0])
 
-	if !vr.listening.Load() {
-		return
-	}
 	for {
 		select {
 		//case deltas := <-vr.events:
@@ -108,7 +105,10 @@ func (vr *Renderer) Process(dt Float.X) {
 			vr.shader.SetShaderParameter("paint_texture", texture)
 			vr.shader.SetShaderParameter("paint_active", true)
 			vr.PaintActive = true
-		case _ = <-vr.brushEvents:
+		case event := <-vr.brushEvents:
+			vr.mouseOver <- event.BrushTarget
+			vr.BrushTarget = Vector3.Round(event.BrushTarget)
+			vr.shader.SetShaderParameter("uplift", Vector3.Sub(event.BrushTarget, Vector3.New(0.5, 0.5, 0.5)))
 			/*if vr.PaintActive && Input.IsMouseButtonPressed(Input.MouseButtonLeft) {
 				vr.BrushTarget = Vector3.Round(event.BrushTarget)
 				vr.shader.SetShaderParameter("uplift", Vector3.Sub(event.BrushTarget, Vector3.New(0.5, 0.5, 0.5)))
@@ -116,9 +116,7 @@ func (vr *Renderer) Process(dt Float.X) {
 					Draw: 1, // TODO upload ID
 				})
 			} else if !Input.IsKeyPressed(Input.KeyShift) {
-				vr.mouseOver <- event.BrushTarget
-				vr.BrushTarget = Vector3.Round(event.BrushTarget)
-				vr.shader.SetShaderParameter("uplift", Vector3.Sub(event.BrushTarget, Vector3.New(0.5, 0.5, 0.5)))
+
 			} else {
 				event.BrushTarget = Vector3.Round(event.BrushTarget)
 				vr.BrushTarget = event.BrushTarget

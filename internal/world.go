@@ -26,6 +26,8 @@ import (
 	"graphics.gd/variant/Float"
 	"graphics.gd/variant/Path"
 	"graphics.gd/variant/Vector3"
+	"runtime.link/api"
+	"runtime.link/api/stub"
 	"the.quetzal.community/editor/echoable"
 	"the.quetzal.community/protocol/echo"
 )
@@ -48,6 +50,8 @@ type World struct {
 			Camera Camera3D.Instance
 		}
 	}
+
+	TerrainTile *TerrainTile
 
 	mouseOver chan Vector3.XYZ
 
@@ -107,7 +111,7 @@ func (world *World) crypto(context.Context) ([]crypto.PublicKey, crypto.Signer, 
 
 // Ready does a bunch of dependency injection and setup.
 func (world *World) Ready() {
-	world.edits = echo.New(echoable.API{}, echo.Clone{
+	world.edits = echo.New(api.Import[echoable.API](stub.API, "", nil), echo.Clone{
 		Crypto: world.crypto,
 		Listen: world.listen,
 		Opener: world.opener,
@@ -135,6 +139,7 @@ func (world *World) Ready() {
 	world.FocalPoint.Lens.Camera.AsNode3D().LookAt(Vector3.Zero)
 	world.Light.AsNode3D().SetRotation(Vector3.New(-math.Pi/2, 0, 0))
 	world.VultureRenderer.SetFocalPoint3D(Vector3.Zero)
+	world.TerrainTile.brushEvents = world.VultureRenderer.brushEvents
 	RenderingServer.SetDebugGenerateWireframes(true)
 }
 

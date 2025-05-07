@@ -163,6 +163,7 @@ func (ui *UI) onThemeSelected(idx int) {
 				ext = png
 			}
 			for resource := range resources.Iter() {
+				resource = String.TrimSuffix(resource, ".import")
 				if !String.HasSuffix(resource, ext) {
 					continue
 				}

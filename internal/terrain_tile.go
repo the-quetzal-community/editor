@@ -5,13 +5,20 @@ import (
 	"graphics.gd/classdb/ArrayMesh"
 	"graphics.gd/classdb/Camera3D"
 	"graphics.gd/classdb/HeightMapShape3D"
+	"graphics.gd/classdb/Image"
 	"graphics.gd/classdb/Input"
 	"graphics.gd/classdb/InputEvent"
 	"graphics.gd/classdb/InputEventMouseButton"
 	"graphics.gd/classdb/Mesh"
 	"graphics.gd/classdb/MeshInstance3D"
+	"graphics.gd/classdb/Node"
+	"graphics.gd/classdb/Resource"
+	"graphics.gd/classdb/Shader"
 	"graphics.gd/classdb/ShaderMaterial"
 	"graphics.gd/classdb/StaticBody3D"
+	"graphics.gd/classdb/Texture2D"
+	"graphics.gd/classdb/Texture2DArray"
+	"graphics.gd/variant/Color"
 	"graphics.gd/variant/Float"
 	"graphics.gd/variant/Object"
 	"graphics.gd/variant/Packed"
@@ -32,12 +39,28 @@ type TerrainTile struct {
 	shape_owner int
 }
 
+func (tile *TerrainTile) AsNode() Node.Instance { return tile.Super().AsNode() }
+
 func (tile *TerrainTile) Ready() {
 	tile.shape_owner = -1
 	tile.Reload()
 }
 
 func (tile *TerrainTile) Reload() {
+	shader := Resource.Load[Shader.Instance]("res://shader/terrain.gdshader")
+	grass := Resource.Load[Texture2D.Instance]("res://terrain/alpine_grass.png")
+	terrains := Texture2DArray.New()
+	terrains.AsImageTextureLayered().CreateFromImages([]Image.Instance{
+		grass.AsTexture2D().GetImage(),
+	})
+	tile.Shader = ShaderMaterial.New()
+	tile.Shader.SetShader(shader)
+	tile.Shader.SetShaderParameter("albedo", Color.RGBA{1, 1, 1, 1})
+	tile.Shader.SetShaderParameter("uv1_scale", Vector2.New(8, 8))
+	tile.Shader.SetShaderParameter("texture_albedo", terrains)
+	tile.Shader.SetShaderParameter("radius", 2.0)
+	tile.Shader.SetShaderParameter("height", 0.0)
+
 	tile.Shader.SetShaderParameter("height", 0.0)
 	tile.Shader.SetShaderParameter("paint_active", false)
 
