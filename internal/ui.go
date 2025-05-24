@@ -34,7 +34,7 @@ var DrawExpansion Float.X
 UI for editing a space in Aviary.
 */
 type UI struct {
-	classdb.Extension[UI, Control.Instance] `gd:"AviaryUI"`
+	Control.Extension[UI] `gd:"AviaryUI"`
 	classdb.Tool
 
 	preview chan Path.ToResource

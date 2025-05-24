@@ -3,7 +3,6 @@ package internal
 import (
 	"sync/atomic"
 
-	"graphics.gd/classdb"
 	"graphics.gd/classdb/Image"
 	"graphics.gd/classdb/Node"
 	"graphics.gd/classdb/Node3D"
@@ -24,7 +23,7 @@ import (
 // Renderer will open a Vulture Events stream and render all
 // neighboring regions around the focal point.
 type Renderer struct {
-	classdb.Extension[Renderer, Node3D.Instance] `gd:"VultureRenderer"`
+	Node3D.Extension[Renderer] `gd:"VultureRenderer"`
 
 	ActiveContent Node.Instance
 	CachedContent Node.Instance
@@ -72,8 +71,6 @@ func (tr *Renderer) Ready() {
 	tr.shader.SetShaderParameter("height", 0.0)
 	tr.BrushRadius = 2.0
 }
-
-func (vr *Renderer) AsNode() Node.Instance { return vr.Super().AsNode() }
 
 func (vr *Renderer) start() {
 	go vr.listenForEvents()
@@ -205,8 +202,8 @@ if ok {
 		area.heightMapping = vr.heightMapping
 		area.brushEvents = vr.brushEvents
 		area.Shader = vr.shader
-		area.Super().AsNode().SetName(name)
-		vr.ActiveRegions.AsNode().AddChild(area.Super().AsNode())
+		area.AsNode().SetName(name)
+		vr.ActiveRegions.AsNode().AddChild(area.AsNode())
 		existing = Node.Instance(vr.ActiveRegions.AsNode().GetNodeOrNull(name))
 	}
 	tile, ok := classdb.As[*TerrainTile](existing)

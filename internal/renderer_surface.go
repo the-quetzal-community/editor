@@ -23,25 +23,25 @@ func (tr *Renderer) OnCreate() {
 func (tr *Renderer) UnhandledInput(event InputEvent.Instance) {
 	if event, ok := classdb.As[InputEventMouseButton.Instance](event); ok {
 		if Input.IsKeyPressed(Input.KeyShift) {
-			if event.ButtonIndex() == InputEventMouseButton.MouseButtonWheelDown {
+			if event.ButtonIndex() == Input.MouseButtonWheelDown {
 				tr.BrushRadius -= 0.5
 				if tr.BrushRadius == 0 {
 					tr.BrushRadius = 0.5
 				}
 				tr.shader.SetShaderParameter("radius", tr.BrushRadius)
 			}
-			if event.ButtonIndex() == InputEventMouseButton.MouseButtonWheelUp {
+			if event.ButtonIndex() == Input.MouseButtonWheelUp {
 				tr.BrushRadius += 0.5
 				tr.shader.SetShaderParameter("radius", tr.BrushRadius)
 			}
 		}
-		if tr.BrushActive && event.ButtonIndex() == InputEventMouseButton.MouseButtonLeft || event.ButtonIndex() == InputEventMouseButton.MouseButtonRight && event.AsInputEvent().IsReleased() {
+		if tr.BrushActive && event.ButtonIndex() == Input.MouseButtonLeft || event.ButtonIndex() == Input.MouseButtonRight && event.AsInputEvent().IsReleased() {
 			if err := tr.edits.LiftTerrain(tr.BrushTarget, tr.BrushRadius, tr.BrushAmount, 1); err != nil {
 				Engine.Raise(err)
 				return
 			}
 		}
-		if event.ButtonIndex() == InputEventMouseButton.MouseButtonLeft && tr.PaintActive {
+		if event.ButtonIndex() == Input.MouseButtonLeft && tr.PaintActive {
 			if event.AsInputEvent().IsReleased() {
 				tr.PaintActive = false
 
@@ -49,10 +49,10 @@ func (tr *Renderer) UnhandledInput(event InputEvent.Instance) {
 		}
 	}
 	if event, ok := classdb.As[InputEventKey.Instance](event); ok {
-		if event.Keycode() == InputEventKey.KeyShift && event.AsInputEvent().IsPressed() {
+		if event.Keycode() == Input.KeyShift && event.AsInputEvent().IsPressed() {
 			tr.shader.SetShaderParameter("brush_active", true)
 		}
-		if event.Keycode() == InputEventKey.KeyShift && event.AsInputEvent().IsReleased() {
+		if event.Keycode() == Input.KeyShift && event.AsInputEvent().IsReleased() {
 			tr.shader.SetShaderParameter("height", 0.0)
 			tr.shader.SetShaderParameter("brush_active", false)
 		}

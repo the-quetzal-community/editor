@@ -25,7 +25,6 @@ import (
 	"math"
 	"math/rand"
 
-	"graphics.gd/classdb"
 	"graphics.gd/classdb/ArrayMesh"
 	"graphics.gd/classdb/FastNoiseLite"
 	"graphics.gd/classdb/Mesh"
@@ -40,7 +39,7 @@ import (
 
 // Rock that is procedurally generated.
 type Rock struct {
-	classdb.Extension[Tree, ArrayMesh.Instance] `gd:"AviaryRock"`
+	ArrayMesh.Extension[Tree] `gd:"AviaryRock"`
 
 	Seed int `gd:"seed" range:"0,1000,or_greater,or_less" default:"100"`
 
@@ -160,8 +159,6 @@ func (rock *Rock) OnSet(name string, value any) {
 func (rock *Rock) OnFree() {
 	rock.generating = false
 }
-
-func (rock *Rock) AsArrayMesh() ArrayMesh.Instance { return rock.Super() }
 
 func (rock *Rock) sphere(radius float64, precision int) (mesh struct {
 	Vertices []Vector3.XYZ

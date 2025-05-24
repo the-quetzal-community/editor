@@ -32,7 +32,6 @@ package internal
 import (
 	"math"
 
-	"graphics.gd/classdb"
 	"graphics.gd/classdb/ArrayMesh"
 	"graphics.gd/classdb/Material"
 	"graphics.gd/classdb/Mesh"
@@ -48,7 +47,7 @@ import (
 
 // Tree is a procedurally generated tree.
 type Tree struct {
-	classdb.Extension[Tree, ArrayMesh.Instance] `gd:"AviaryTree"`
+	ArrayMesh.Extension[Tree] `gd:"AviaryTree"`
 
 	Seed      Float.X `gd:"seed" default:"10" range:"0,1000,or_greater,or_less"`
 	Levels    int     `gd:"levels" default:"3" range:"1,7,or_greater"`
@@ -117,8 +116,6 @@ func (tree *Tree) OnSet(name string, value any) {
 func (tree *Tree) OnFree() {
 	tree.recalculating = false
 }
-
-func (tree *Tree) AsArrayMesh() ArrayMesh.Instance { return tree.Super() }
 
 func (tree *Tree) recalculate() {
 	if !tree.recalculating {

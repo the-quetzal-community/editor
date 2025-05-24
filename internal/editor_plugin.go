@@ -12,9 +12,9 @@ type EditorPlugin struct {
 }
 
 func (ml *EditorPlugin) EnterTree() {
-	GLTFDocument.RegisterGltfDocumentExtension(new(ModelLoader).Super(), false)
+	GLTFDocument.RegisterGltfDocumentExtension(new(ModelLoader).AsGLTFDocumentExtension(), false)
 }
 
 func (ml *EditorPlugin) ExitTree() {
-	GLTFDocument.UnregisterGltfDocumentExtension(new(ModelLoader).Super())
+	GLTFDocument.UnregisterGltfDocumentExtension(new(ModelLoader).AsGLTFDocumentExtension())
 }

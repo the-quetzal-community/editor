@@ -31,7 +31,7 @@ import (
 )
 
 type ModelLoader struct {
-	classdb.Extension[ModelLoader, GLTFDocumentExtension.Instance] `gd:"AviaryModelLoader"`
+	GLTFDocumentExtension.Extension[ModelLoader] `gd:"AviaryModelLoader"`
 	classdb.Tool
 }
 

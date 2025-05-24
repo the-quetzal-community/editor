@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"graphics.gd/classdb"
 	"graphics.gd/classdb/ArrayMesh"
 	"graphics.gd/classdb/Camera3D"
 	"graphics.gd/classdb/HeightMapShape3D"
@@ -11,7 +10,6 @@ import (
 	"graphics.gd/classdb/InputEventMouseButton"
 	"graphics.gd/classdb/Mesh"
 	"graphics.gd/classdb/MeshInstance3D"
-	"graphics.gd/classdb/Node"
 	"graphics.gd/classdb/Resource"
 	"graphics.gd/classdb/Shader"
 	"graphics.gd/classdb/ShaderMaterial"
@@ -28,7 +26,7 @@ import (
 )
 
 type TerrainTile struct {
-	classdb.Extension[TerrainTile, StaticBody3D.Instance] `gd:"AviaryTerrainTile"`
+	StaticBody3D.Extension[TerrainTile] `gd:"AviaryTerrainTile"`
 
 	brushEvents chan<- terrainBrushEvent
 
@@ -38,8 +36,6 @@ type TerrainTile struct {
 
 	shape_owner int
 }
-
-func (tile *TerrainTile) AsNode() Node.Instance { return tile.Super().AsNode() }
 
 func (tile *TerrainTile) Ready() {
 	tile.shape_owner = -1
@@ -133,18 +129,18 @@ func (tile *TerrainTile) Reload() {
 	// generate mesh with pre-baked heights.
 
 	if tile.shape_owner != -1 {
-		tile.Super().AsCollisionObject3D().ShapeOwnerClearShapes(tile.shape_owner)
+		tile.AsCollisionObject3D().ShapeOwnerClearShapes(tile.shape_owner)
 	} else {
-		tile.shape_owner = tile.Super().AsCollisionObject3D().CreateShapeOwner(tile.AsObject())
+		tile.shape_owner = tile.AsCollisionObject3D().CreateShapeOwner(tile.AsObject())
 	}
-	tile.Super().AsCollisionObject3D().ShapeOwnerAddShape(tile.shape_owner, shape.AsShape3D())
+	tile.AsCollisionObject3D().ShapeOwnerAddShape(tile.shape_owner, shape.AsShape3D())
 
 	tile.Mesh.AsGeometryInstance3D().SetMaterialOverride(tile.Shader.AsMaterial())
 	tile.Mesh.SetMesh(mesh.AsMesh())
 	tile.Mesh.AsNode3D().SetPosition(Vector3.XYZ{
 		-8, 0, -8,
 	})
-	/*tile.Super().AsNode3D().SetPosition(Vector3.XYZ{
+	/*tile.AsNode3D().SetPosition(Vector3.XYZ{
 	float32(tile.region[0])*16 + 8 - 0.5,
 	0,
 	float32(tile.region[1])*16 + 8 - 0.5,
@@ -153,7 +149,7 @@ func (tile *TerrainTile) Reload() {
 
 func (tile *TerrainTile) InputEvent(camera Camera3D.Instance, event InputEvent.Instance, pos, normal Vector3.XYZ, shape int) {
 	if event, ok := Object.As[InputEventMouseButton.Instance](event); ok && Input.IsKeyPressed(Input.KeyShift) {
-		if event.ButtonIndex() == InputEventMouseButton.MouseButtonLeft {
+		if event.ButtonIndex() == Input.MouseButtonLeft {
 			if event.AsInputEvent().IsPressed() {
 				select {
 				case tile.brushEvents <- terrainBrushEvent{
@@ -164,7 +160,7 @@ func (tile *TerrainTile) InputEvent(camera Camera3D.Instance, event InputEvent.I
 				}
 			}
 		}
-		if event.ButtonIndex() == InputEventMouseButton.MouseButtonRight {
+		if event.ButtonIndex() == Input.MouseButtonRight {
 			if event.AsInputEvent().IsPressed() {
 				select {
 				case tile.brushEvents <- terrainBrushEvent{

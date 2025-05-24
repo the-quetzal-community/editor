@@ -16,7 +16,6 @@ import (
 	"graphics.gd/classdb/InputEvent"
 	"graphics.gd/classdb/InputEventKey"
 	"graphics.gd/classdb/InputEventMouseButton"
-	"graphics.gd/classdb/Node"
 	"graphics.gd/classdb/Node3D"
 	"graphics.gd/classdb/OS"
 	"graphics.gd/classdb/PackedScene"
@@ -34,7 +33,7 @@ import (
 
 // World represents a creative space accessible via Vulture.
 type World struct {
-	classdb.Extension[World, Node3D.Instance] `gd:"AviaryWorld"`
+	Node3D.Extension[World] `gd:"AviaryWorld"`
 
 	Light DirectionalLight3D.Instance
 
@@ -62,8 +61,6 @@ type World struct {
 
 	saving atomic.Bool
 }
-
-func (world *World) AsNode() Node.Instance { return world.Super().AsNode() }
 
 func (world *World) extend(ctx context.Context, buf []byte) error {
 	path := OS.GetUserDataDir()
@@ -133,7 +130,7 @@ func (world *World) Ready() {
 	if ok {
 		editor.preview = world.PreviewRenderer.preview
 		editor.texture = world.VultureRenderer.texture
-		world.Super().AsNode().AddChild(editor.Super().AsNode())
+		world.AsNode().AddChild(editor.AsNode())
 	}
 	world.FocalPoint.Lens.Camera.AsNode3D().SetPosition(Vector3.New(0, 1, 3))
 	world.FocalPoint.Lens.Camera.AsNode3D().LookAt(Vector3.Zero)
@@ -183,17 +180,17 @@ func (world *World) UnhandledInput(event InputEvent.Instance) {
 	// Tilt the camera up and down with R and F.
 	if !DrawExpanded.Load() {
 		if event, ok := classdb.As[InputEventMouseButton.Instance](event); ok && !Input.IsKeyPressed(Input.KeyShift) {
-			if event.ButtonIndex() == InputEventMouseButton.MouseButtonWheelUp {
+			if event.ButtonIndex() == Input.MouseButtonWheelUp {
 				world.FocalPoint.Lens.Camera.AsNode3D().Translate(Vector3.New(0, 0, -0.4))
 			}
-			if event.ButtonIndex() == InputEventMouseButton.MouseButtonWheelDown {
+			if event.ButtonIndex() == Input.MouseButtonWheelDown {
 				world.FocalPoint.Lens.Camera.AsNode3D().Translate(Vector3.New(0, 0, 0.4))
 			}
 		}
 	}
 	if event, ok := classdb.As[InputEventKey.Instance](event); ok {
-		if event.AsInputEvent().IsPressed() && event.Keycode() == InputEventKey.KeyF1 {
-			vp := Viewport.Get(world.Super().AsNode())
+		if event.AsInputEvent().IsPressed() && event.Keycode() == Input.KeyF1 {
+			vp := Viewport.Get(world.AsNode())
 			vp.SetDebugDraw(vp.DebugDraw() ^ Viewport.DebugDrawWireframe)
 		}
 	}

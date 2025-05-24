@@ -1,17 +1,15 @@
 package internal
 
 import (
-	"graphics.gd/classdb"
 	"graphics.gd/classdb/Container"
 	"graphics.gd/classdb/Control"
 	"graphics.gd/classdb/GridContainer"
-	"graphics.gd/classdb/Node"
 	"graphics.gd/classdb/ScrollContainer"
 	"graphics.gd/variant/Object"
 )
 
 type GridFlowContainer struct {
-	classdb.Extension[GridFlowContainer, Container.Instance] `gd:"GridFlowContainer"`
+	Container.Extension[GridFlowContainer] `gd:"GridFlowContainer"`
 
 	Scrollable struct {
 		ScrollContainer.Instance
@@ -20,17 +18,15 @@ type GridFlowContainer struct {
 	}
 }
 
-func (grid *GridFlowContainer) AsNode() Node.Instance { return grid.Super().AsNode() }
-
 func (grid *GridFlowContainer) Ready() {
 	grid.Scrollable.AsControl().SetAnchorsPreset(Control.PresetFullRect)
 	grid.Scrollable.SetHorizontalScrollMode(ScrollContainer.ScrollModeDisabled)
 	grid.Scrollable.SetVerticalScrollMode(ScrollContainer.ScrollModeDisabled)
-	grid.Super().AsControl().SetClipContents(true)
+	grid.AsControl().SetClipContents(true)
 }
 
 func (grid *GridFlowContainer) Update() {
-	new_columns := int(Object.To[Control.Instance](grid.Super().AsNode().GetParent()).Size().X / 256)
+	new_columns := int(Object.To[Control.Instance](grid.AsNode().GetParent()).Size().X / 256)
 	new_columns = max(1, new_columns)
 	grid.Scrollable.GridContainer.SetColumns(new_columns)
 	grid.Scrollable.SetHorizontalScrollMode(ScrollContainer.ScrollModeDisabled)

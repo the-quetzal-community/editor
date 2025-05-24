@@ -3,7 +3,6 @@ package internal
 import (
 	"math/rand/v2"
 
-	"graphics.gd/classdb"
 	"graphics.gd/classdb/Engine"
 	"graphics.gd/classdb/Input"
 	"graphics.gd/classdb/Node"
@@ -22,7 +21,7 @@ import (
 // is planning where to place it. As such, these items will follow
 // the cursor and will be submitted to the Vulture API on click.
 type PreviewRenderer struct {
-	classdb.Extension[PreviewRenderer, Node3D.Instance]
+	Node3D.Extension[PreviewRenderer]
 
 	mouseOver chan Vector3.XYZ
 
@@ -34,8 +33,6 @@ type PreviewRenderer struct {
 	current string
 }
 
-func (pr *PreviewRenderer) AsNode() Node.Instance { return pr.Super().AsNode() }
-
 func (pr *PreviewRenderer) Process(dt Float.X) {
 	for {
 		select {
@@ -43,15 +40,15 @@ func (pr *PreviewRenderer) Process(dt Float.X) {
 			scene := Resource.Load[PackedScene.Instance](resource)
 			instance, ok := Object.As[Node3D.Instance](scene.Instantiate())
 			if ok {
-				if pr.Super().AsNode().GetChildCount() > 0 {
-					Node.Instance(pr.Super().AsNode().GetChild(0)).QueueFree()
+				if pr.AsNode().GetChildCount() > 0 {
+					Node.Instance(pr.AsNode().GetChild(0)).QueueFree()
 				}
 				instance.AsNode3D().SetScale(Vector3.MulX(instance.AsNode3D().Scale(), 0.1))
-				pr.Super().AsNode().AddChild(instance.AsNode())
+				pr.AsNode().AddChild(instance.AsNode())
 			}
 			pr.current = resource.String()
 		case pos := <-pr.mouseOver:
-			pr.Super().AsNode3D().SetPosition(pos)
+			pr.AsNode3D().SetPosition(pos)
 			continue
 		default:
 
@@ -59,16 +56,16 @@ func (pr *PreviewRenderer) Process(dt Float.X) {
 		break
 	}
 	if Input.IsMouseButtonPressed(Input.MouseButtonLeft) {
-		if pr.Super().AsNode().GetChildCount() > 0 {
-			Node.Instance(pr.Super().AsNode().GetChild(0)).QueueFree()
-			if err := pr.edits.InsertAsset(echoable.Asset(rand.Uint64()), echoable.Thing(rand.Uint64()), pr.Super().AsNode3D().AsNode3D().GlobalTransform()); err != nil {
+		if pr.AsNode().GetChildCount() > 0 {
+			Node.Instance(pr.AsNode().GetChild(0)).QueueFree()
+			if err := pr.edits.InsertAsset(echoable.Asset(rand.Uint64()), echoable.Thing(rand.Uint64()), pr.AsNode3D().AsNode3D().GlobalTransform()); err != nil {
 				Engine.Raise(err)
 			}
 		}
 	}
-	pos := pr.Super().AsNode3D().Position()
+	pos := pr.AsNode3D().Position()
 	pos.Y = (pr.terrain.HeightAt(pos))
-	pr.Super().AsNode3D().SetPosition(pos)
+	pr.AsNode3D().SetPosition(pos)
 }
 
 func (pr *PreviewRenderer) Ready() {
