@@ -95,8 +95,8 @@ func (tile *TerrainTile) Reload() {
 		weights.SetIndex(index*4+3, float32(w4))
 	}
 	// generate the triangle pairs of the plane mesh
-	for x := 0; x < 16; x++ {
-		for y := 0; y < 16; y++ {
+	for x := range 16 {
+		for y := range 16 {
 			cell := x + 16*y
 			add(6*(x+16*y)+0, cell, x, y, 1, 0, 0, 0)     // top left
 			add(6*(x+16*y)+1, cell, x+1, y, 0, 1, 0, 0)   // top right

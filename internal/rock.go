@@ -28,13 +28,13 @@ import (
 	"graphics.gd/classdb/ArrayMesh"
 	"graphics.gd/classdb/FastNoiseLite"
 	"graphics.gd/classdb/Mesh"
+	"graphics.gd/variant/Angle"
 	"graphics.gd/variant/Callable"
 	"graphics.gd/variant/Float"
 	"graphics.gd/variant/Object"
 	"graphics.gd/variant/Packed"
 	"graphics.gd/variant/Vector3"
 	"graphics.gd/variant/Vector3i"
-	"grow.graphics/xy"
 )
 
 // Rock that is procedurally generated.
@@ -70,7 +70,7 @@ func (rock *Rock) getNeighbours(positions []Vector3.XYZ, cells []Vector3i.XYZ) [
 			return i % 3
 		}
 		// go through all the points of the face.
-		for iPosition := 0; iPosition < 3; iPosition++ {
+		for iPosition := range 3 {
 			// the neighbours of this points are the previous and next points(in the array)
 			var cur = Vector3i.Index(cellPositions, wrap(iPosition+0))
 			var prev = Vector3i.Index(cellPositions, wrap(iPosition-1))
@@ -160,14 +160,14 @@ func (rock *Rock) OnFree() {
 	rock.generating = false
 }
 
-func (rock *Rock) sphere(radius float64, precision int) (mesh struct {
+func (rock *Rock) sphere(radius Float.X, precision int) (mesh struct {
 	Vertices []Vector3.XYZ
 	Indicies []Vector3i.XYZ
 	Normals  []Vector3.XYZ
 }) {
 	var (
-		stacks    = float64(precision)
-		slices    = float64(precision)
+		stacks    = Angle.Radians(precision)
+		slices    = Angle.Radians(precision)
 		positions []Vector3.XYZ
 		cells     []Vector3i.XYZ
 		normals   []Vector3.XYZ
@@ -183,22 +183,22 @@ func (rock *Rock) sphere(radius float64, precision int) (mesh struct {
 	// loop through the stacks.
 	for i := 1; i < int(stacks); i++ {
 		var (
-			u              = float64(i) / stacks
-			phi            = u * math.Pi
+			u              = Angle.Radians(i) / stacks
+			phi            = u * Angle.Pi
 			stackBaseIndex = len(cells) / 2
 		)
 		// loop through the slices.
-		for j := 0; j < int(slices); j++ {
+		for j := range int(slices) {
 			var (
-				v     = float64(j) / slices
-				theta = v * (math.Pi * 2)
+				v     = Angle.Radians(j) / slices
+				theta = v * (Angle.Pi * 2)
 			)
 			var R = radius
 			// use spherical coordinates to calculate the positions.
 			var (
-				x = xy.Cos(theta) * xy.Sin(phi)
-				y = xy.Cos(phi)
-				z = xy.Sin(theta) * xy.Sin(phi)
+				x = Angle.Cos(theta) * Angle.Sin(phi)
+				y = Angle.Cos(phi)
+				z = Angle.Sin(theta) * Angle.Sin(phi)
 			)
 			positions = append(positions, Vector3.New(R*x, R*y, R*z))
 			normals = append(normals, Vector3.New(x, y, z))
@@ -237,7 +237,7 @@ func (rock *Rock) sphere(radius float64, precision int) (mesh struct {
 	index++
 	positions = append(positions, Vector3.New(0, -radius, 0))
 	normals = append(normals, Vector3.New(0, -1, 0))
-	for i := 0; i < int(slices); i++ {
+	for i := range int(slices) {
 		var i1 = uint32(topIndex)
 		var i2 = uint32(i + 0)
 		var i3 = uint32(i+1) % uint32(slices)
@@ -290,7 +290,7 @@ func (rock *Rock) generate() {
 	var (
 		scrapeIndices []int
 	)
-	for i := 0; i < int(rock.ScrapeCount); i++ {
+	for range int(rock.ScrapeCount) {
 		var (
 			attempts = 0
 		)
@@ -302,7 +302,7 @@ func (rock *Rock) generate() {
 				tooClose  = false
 			)
 			// check that it is not too close to the other vertices.
-			for j := 0; j < len(scrapeIndices); j++ {
+			for j := range len(scrapeIndices) {
 				var (
 					q = positions[scrapeIndices[j]]
 				)
@@ -323,7 +323,7 @@ func (rock *Rock) generate() {
 		}
 	}
 	// now we scrape at all the selected positions.
-	for i := 0; i < len(scrapeIndices); i++ {
+	for i := range scrapeIndices {
 		rock.scrape(
 			scrapeIndices[i], positions, normals,
 			adjacentVertices, rock.ScrapeStrength, rock.ScrapeRadius)
@@ -332,7 +332,7 @@ func (rock *Rock) generate() {
 	   Finally, we apply a Perlin noise to slighty distort the mesh,
 	    and then we scale the mesh.
 	*/
-	for i := 0; i < len(positions); i++ {
+	for i := range positions {
 		var p = positions[i]
 		var noise = rock.NoiseStrength * noise.AsNoise().GetNoise3d(
 			rock.NoiseScale*p.X,
@@ -348,7 +348,7 @@ func (rock *Rock) generate() {
 	defer Object.Instance(ArrayMesh.AsObject()).SetSignalsBlocked(false)
 	ArrayMesh.ClearSurfaces()
 	{
-		var vertices = Packed.New[Vector3.XYZ](positions...)
+		var vertices = Packed.New(positions...)
 		var indicies = Packed.New[int32]()
 		for _, index := range cells {
 			indicies.Append(index.Z)

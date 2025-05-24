@@ -265,35 +265,6 @@ func (tree Tree) Leaves() Leaves {
 	return Leaves(tree)
 }
 
-func (tree Tree) indicies() []uint32 {
-	var retArray = make([]uint32, 0, len(tree.mesh.faces)*3)
-	for _, face := range tree.mesh.faces {
-		retArray = append(retArray, uint32(face.X))
-		retArray = append(retArray, uint32(face.Y))
-		retArray = append(retArray, uint32(face.Z))
-	}
-	return retArray
-}
-
-func (tree Tree) uvs() []float32 {
-	var retArray = make([]float32, 0, len(tree.mesh.uvs)*3)
-	for _, uv := range tree.mesh.uvs {
-		retArray = append(retArray, float32(uv.X))
-		retArray = append(retArray, float32(uv.Y))
-	}
-	return retArray
-}
-
-func (tree Tree) normals() []float32 {
-	var retArray = make([]float32, 0, len(tree.mesh.normals)*3)
-	for _, vector := range tree.mesh.normals {
-		retArray = append(retArray, float32(vector.X))
-		retArray = append(retArray, float32(vector.Y))
-		retArray = append(retArray, float32(vector.Z))
-	}
-	return retArray
-}
-
 func (tree *Tree) calcNormals() {
 	var (
 		allNormals = make([][]Vector3.XYZ, len(tree.mesh.verts))
@@ -313,7 +284,7 @@ func (tree *Tree) calcNormals() {
 	for i := range allNormals {
 		var total = Vector3.Zero
 		var l = len(allNormals[i])
-		for j := 0; j < l; j++ {
+		for j := range l {
 			total = Vector3.Add(total, Vector3.MulX(allNormals[i][j], 1/float64(l)))
 		}
 		tree.mesh.normals[i] = total
