@@ -3,8 +3,8 @@ package echoable
 import (
 	"runtime.link/api"
 
-	"graphics.gd/variant/Angle"
 	"graphics.gd/variant/Color"
+	"graphics.gd/variant/Euler"
 	"graphics.gd/variant/Transform3D"
 	"graphics.gd/variant/Vector3"
 )
@@ -25,7 +25,7 @@ type API struct {
 
 	BranchThing func(do Thing, as Thing, at Transform3D.BasisOrigin) error `isle:"25ee2cfc-0b94-42b8-a2b8-0b0eadaf2688"`
 	OffsetThing func(to Thing, do Vector3.XYZ) error                       `isle:"dc1bdd1d-a7dd-416b-ab48-028dc7b28321"`
-	RotateThing func(to Thing, do Angle.Euler3D) error                     `isle:"9c5d62dd-887c-45f7-9848-9cc55c948e00"`
+	RotateThing func(to Thing, do Euler.Radians) error                     `isle:"9c5d62dd-887c-45f7-9848-9cc55c948e00"`
 	ResizeThing func(to Thing, do Vector3.XYZ) error                       `isle:"acbfd951-6645-4774-a65a-2c3b511e6e2d"`
 	ColourThing func(to Thing, do Color.RGBA) error                        `isle:"340ce211-25d0-4e44-ac67-335f664efc60"`
 	RemoveThing func(id Thing) error                                       `isle:"28f3c549-efe2-46a8-9064-f7667a3780b7"`

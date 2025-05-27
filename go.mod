@@ -3,7 +3,7 @@ module the.quetzal.community/editor
 go 1.24.2
 
 require (
-	graphics.gd v0.0.0-20250524003507-263cd858d403
+	graphics.gd v0.0.0-20250526063741-ffcae8f56f4c
 	runtime.link v0.0.0-20250504214453-23e004e9ddb5
 	the.quetzal.community/protocol v0.0.0-20250506115736-99a4da0894b2
 )

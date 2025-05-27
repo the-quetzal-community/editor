@@ -5,7 +5,6 @@ import (
 	"crypto"
 	"crypto/ed25519"
 	"io"
-	"math"
 	"os"
 	"sync/atomic"
 
@@ -22,6 +21,8 @@ import (
 	"graphics.gd/classdb/RenderingServer"
 	"graphics.gd/classdb/Resource"
 	"graphics.gd/classdb/Viewport"
+	"graphics.gd/variant/Angle"
+	"graphics.gd/variant/Euler"
 	"graphics.gd/variant/Float"
 	"graphics.gd/variant/Path"
 	"graphics.gd/variant/Vector3"
@@ -134,7 +135,7 @@ func (world *World) Ready() {
 	}
 	world.FocalPoint.Lens.Camera.AsNode3D().SetPosition(Vector3.New(0, 1, 3))
 	world.FocalPoint.Lens.Camera.AsNode3D().LookAt(Vector3.Zero)
-	world.Light.AsNode3D().SetRotation(Vector3.New(-math.Pi/2, 0, 0))
+	world.Light.AsNode3D().SetRotation(Euler.Radians{X: -Angle.Pi / 2})
 	world.VultureRenderer.SetFocalPoint3D(Vector3.Zero)
 	world.TerrainTile.brushEvents = world.VultureRenderer.brushEvents
 	RenderingServer.SetDebugGenerateWireframes(true)
@@ -144,10 +145,10 @@ const speed = 8
 
 func (world *World) Process(dt Float.X) {
 	if Input.IsKeyPressed(Input.KeyQ) {
-		world.FocalPoint.AsNode3D().GlobalRotate(Vector3.New(0, 1, 0), -dt)
+		world.FocalPoint.AsNode3D().GlobalRotate(Vector3.New(0, 1, 0), -Angle.Radians(dt))
 	}
 	if Input.IsKeyPressed(Input.KeyE) {
-		world.FocalPoint.AsNode3D().GlobalRotate(Vector3.New(0, 1, 0), dt)
+		world.FocalPoint.AsNode3D().GlobalRotate(Vector3.New(0, 1, 0), Angle.Radians(dt))
 	}
 	if Input.IsKeyPressed(Input.KeyA) || Input.IsKeyPressed(Input.KeyLeft) {
 		world.FocalPoint.AsNode3D().Translate(Vector3.New(-speed*dt, 0, 0))
@@ -162,10 +163,10 @@ func (world *World) Process(dt Float.X) {
 		world.FocalPoint.AsNode3D().Translate(Vector3.New(0, 0, -speed*dt))
 	}
 	if Input.IsKeyPressed(Input.KeyR) {
-		world.FocalPoint.Lens.AsNode3D().Rotate(Vector3.New(1, 0, 0), -dt)
+		world.FocalPoint.Lens.AsNode3D().Rotate(Vector3.New(1, 0, 0), -Angle.Radians(dt))
 	}
 	if Input.IsKeyPressed(Input.KeyF) {
-		world.FocalPoint.Lens.AsNode3D().Rotate(Vector3.New(1, 0, 0), dt)
+		world.FocalPoint.Lens.AsNode3D().Rotate(Vector3.New(1, 0, 0), Angle.Radians(dt))
 	}
 	if Input.IsKeyPressed(Input.KeyEqual) {
 		world.FocalPoint.Lens.Camera.AsNode3D().Translate(Vector3.New(0, 0, -0.5))

@@ -21,6 +21,7 @@ func init() {
 	classdb.Register[internal.Renderer]()
 	classdb.Register[internal.EditorPlugin]()
 	classdb.Register[internal.ModelLoader]()
+	classdb.Register[internal.GridFlowContainer]()
 }
 
 func Run() {
