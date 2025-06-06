@@ -9,12 +9,15 @@ import (
 type EditorPlugin struct {
 	BaseEditorPlugin.Extension[EditorPlugin]
 	classdb.Tool
+
+	modelLoader *ModelLoader
 }
 
 func (ml *EditorPlugin) EnterTree() {
-	GLTFDocument.RegisterGltfDocumentExtension(new(ModelLoader).AsGLTFDocumentExtension(), false)
+	ml.modelLoader = new(ModelLoader)
+	GLTFDocument.RegisterGltfDocumentExtension(ml.modelLoader.AsGLTFDocumentExtension(), false)
 }
 
 func (ml *EditorPlugin) ExitTree() {
-	GLTFDocument.UnregisterGltfDocumentExtension(new(ModelLoader).AsGLTFDocumentExtension())
+	GLTFDocument.UnregisterGltfDocumentExtension(ml.modelLoader.AsGLTFDocumentExtension())
 }
