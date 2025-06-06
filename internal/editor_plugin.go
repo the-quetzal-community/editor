@@ -7,7 +7,7 @@ import (
 )
 
 type EditorPlugin struct {
-	classdb.Extension[EditorPlugin, BaseEditorPlugin.Instance] `gd:"AviaryEditorPlugin"`
+	BaseEditorPlugin.Extension[EditorPlugin]
 	classdb.Tool
 }
 
